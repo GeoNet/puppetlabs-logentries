@@ -6,7 +6,6 @@ language specific logging.
 
   logentries::token { "python_log":
       ensure            => present,
-      env_var           => "LE_PYTHON_LOG",
       account_key       => 'long-key-from-logentries'
   }
   }
@@ -21,8 +20,7 @@ language specific logging.
   newparam :account_key do
     desc "Get this key from logentries."
   end
-  newparam :env_var do
-    desc "environment variable to store the token in"
-    defaultto :name
-   end
+  newparam :host_key do
+    desc "The host key (or agent-key) from logentries."
+  end
 end

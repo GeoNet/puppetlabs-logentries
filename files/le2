@@ -1,0 +1,132 @@
+#!/usr/bin/env python2
+
+def which(program):
+    import os
+    def is_exe(fpath):
+        return os.path.isfile(fpath) and os.access(fpath, os.X_OK)
+
+    fpath, fname = os.path.split(program)
+    if fpath:
+        if is_exe(program):
+            return program
+    else:
+        for path in os.environ["PATH"].split(os.pathsep):
+            path = path.strip('"')
+            exe_file = os.path.join(path, program)
+            if is_exe(exe_file):
+                return exe_file
+
+    return None
+
+import imp
+imp.load_source("le", which("le"))
+from le import *
+
+def request_new_token(name):
+    """
+    Creates a new token log.
+    """
+    request = {"request":"new_log",
+            "user_key": config.user_key,
+            "host_key": config.agent_key,
+            "name": name,
+            "filename": "",
+            "type": "",
+            "source": "token",
+            "follow": "false"}
+    response = api_request( request, True, True)
+    print response['log']['token']
+
+def is_token_followed(name):
+    """
+    Checks if a log exists for the host with the given name.
+    """
+    host = request( 'hosts/%s/'%config.agent_key, True, True)
+    logs = host['list']
+    for ilog in logs:
+        if ilog['type'] == 'token' and name == ilog['name']:
+            print ilog['token']
+            return True
+    return False
+
+def cmd_new_token(args):
+    """
+    Create a new token.
+    """
+
+    config.load()
+    config.agent_key_required()
+    name = config.name
+    if name == NOT_SET:
+        die("Error: must provide log name.")
+
+    if not config.force and is_token_followed(name):
+        die('Already logging to token with name %s'%name, EXIT_OK)
+    request_new_token(name)
+
+def cmd_list_tokens(args):
+    """
+    List all tokens with the supplied prefix.
+    """
+
+    prefix = 'le_'
+    if len(args) > 0:
+        prefix = args[0]
+
+    config.load()
+    config.agent_key_required()
+
+    host = request( 'hosts/%s/'%config.agent_key, True, True)
+    logs = host['list']
+    for ilog in logs:
+        if ilog['type'] == 'token':
+            print '%s%s=%s' % (prefix, ilog['name'], ilog['token'])
+
+def cmd_hostkey(args):
+    config.load()
+    config.agent_key_required()
+    no_more_args(args)
+
+    print config.agent_key
+
+
+def main2():
+    # Read command line parameters
+    args = config.process_params( sys.argv[1:])
+
+    if config.debug:
+        log.setLevel( logging.DEBUG)
+    if config.debug_system:
+        die( system_detect( True))
+    if config.debug_loglist:
+        die( collect_log_names( system_detect( True)))
+
+    argv0 = sys.argv[0]
+    if argv0 and argv0 != '':
+        pname = os.path.basename(argv0).split('-')
+        if len(pname) != 1:
+            args.insert(0, pname[-1])
+
+    commands = {
+            'tokens': cmd_list_tokens,
+            'token-follow': cmd_new_token,
+            'host-key': cmd_hostkey,
+            }
+    for cmd, func in commands.items():
+        if cmd == args[0]:
+            return func( args[1:])
+    raise ValueError( 'Error: Unknown command "%s".'%args[0])
+
+
+
+if __name__ == '__main__':
+    try:
+        try:
+            main2()
+        except ValueError:
+            log.debug("Not a valid custom command.")
+            main()
+    except KeyboardInterrupt:
+        log.info( "Interrupted")
+
+# vim: set ts=4 sw=4 tw=0 et:
