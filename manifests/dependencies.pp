@@ -51,7 +51,7 @@ class logentries::dependencies {
         gpgkey   => 'http://rep.logentries.com/RPM-GPG-KEY-logentries',
       }
 
-      package { [ 'python-setproctitle', 'python-simplejson' ]:
+      package { [ 'python-simplejson' ]:
         ensure  => latest,
         require => Yumrepo['logentries']
       }
