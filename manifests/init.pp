@@ -48,7 +48,7 @@ class logentries($account_key, $le_name='', $le_hostname='', $region_flag='') {
     require    => Package['logentries-daemon'],
   }
 
-  file { '/usr/local/bin/le2':
+  file { '/usr/bin/le2':
     ensure => file,
     owner  => 'root',
     group  => 'root',
@@ -61,7 +61,7 @@ class logentries($account_key, $le_name='', $le_hostname='', $region_flag='') {
     owner   => 'root',
     group   => 'root',
     mode    => '0755',
-    target  => '/usr/local/bin/le2',
-    require => File['/usr/local/bin/le2'],
+    target  => '/usr/bin/le2',
+    require => File['/usr/bin/le2'],
   }
 }
