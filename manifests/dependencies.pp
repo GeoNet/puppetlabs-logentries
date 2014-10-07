@@ -46,9 +46,11 @@ class logentries::dependencies {
         descr    => "logentries $::operatingsystemrelease $::architecture Repository ",
         enabled  => 1,
         baseurl  => $::operatingsystem ? {
-          /(Fedora|fedora|RedHat|redhat|CentOS)/ =>  'http://rep.logentries.com/rh/$basearch',
-          'Scientific'                           =>  'http://rep.logentries.com/rh/$basearch',
-          'Amazon'                               =>  'http://rep.logentries.com/amazon$releasever/$basearch',
+          /(?i)(centos|scientific)/ => 'http://rep.logentries.com/centos$releasever/$basearch',
+          amazon                    => 'http://rep.logentries.com/amazon$releasever/$basearch',
+          fedora                    => 'http://rep.logentries.com/fedora$releasever/$basearch',
+          redhat                    => 'http://rep.logentries.com/rh/$basearch',
+          scientific                => 'http://rep.logentries.com/rh/$basearch',
         },
         gpgcheck => $::operatingsystemrelease ? {
           /^5.*/  => '0',
