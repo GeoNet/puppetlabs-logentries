@@ -27,17 +27,19 @@ class logentries::dependencies {
   case $::operatingsystem {
     'Fedora', 'fedora', 'RedHat', 'redhat', 'CentOS', 'Amazon', 'Scientific': {
 
-      $rpmkey = '/etc/pki/rpm-gpg/RPM-GPG-KEY-logentries'
+      if ($::operatingsystemrelease !~ /^5.*/) {
+        $rpmkey = '/etc/pki/rpm-gpg/RPM-GPG-KEY-logentries'
 
-      file { $rpmkey:
-        ensure => present,
-        source => 'puppet:///modules/logentries/RPM-GPG-KEY-logentries',
-      }
+        file { $rpmkey:
+          ensure => present,
+          source => 'puppet:///modules/logentries/RPM-GPG-KEY-logentries',
+        }
 
-      exec { 'import_key':
-        command     => "/bin/rpm --import ${rpmkey}",
-        subscribe   => File[$rpmkey],
-        refreshonly => true,
+        exec { 'import_key':
+          command     => "/bin/rpm --import ${rpmkey}",
+          subscribe   => File[$rpmkey],
+          refreshonly => true,
+        }
       }
 
       yumrepo { 'logentries':
@@ -48,7 +50,10 @@ class logentries::dependencies {
           'Scientific'                           =>  'http://rep.logentries.com/rh/$basearch',
           'Amazon'                               =>  'http://rep.logentries.com/amazon$releasever/$basearch',
         },
-        gpgcheck => 1,
+        gpgcheck => $::operatingsystemrelease ? {
+          /^5.*/  => '0',
+          default => '1',
+        },
         gpgkey   => 'http://rep.logentries.com/RPM-GPG-KEY-logentries',
       }
 
