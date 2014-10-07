@@ -76,7 +76,7 @@ def cmd_list_tokens(args):
     config.load()
     config.agent_key_required()
 
-    host = request( 'hosts/%s/'%config.agent_key, True, True)
+    host = request( 'hosts/%s/'%config.agent_key, False, True, retry=True)
     logs = host['list']
     for ilog in logs:
         if ilog['type'] == 'token':
