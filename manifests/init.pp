@@ -55,13 +55,4 @@ class logentries($account_key, $le_name='', $le_hostname='', $region_flag='') {
     mode   => '0755',
     source => "puppet:///modules/${module_name}/le2",
   }
-
-  file { '/etc/puppetlabs/facter/facts.d/le-tokens':
-    ensure  => link,
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    target  => '/usr/bin/le2',
-    require => File['/usr/bin/le2'],
-  }
 }
