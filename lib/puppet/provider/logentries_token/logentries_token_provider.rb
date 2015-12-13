@@ -18,7 +18,7 @@ Puppet::Type.type(:logentries_token).provide :token do
   def destroy
     Puppet.debug "destroy"
     begin
-      output = le(['rm', "hosts/#{get_host_key}/#{resource[:name]}"])
+      output = le(['rm', "hostnames/#{get_host_key}/#{resource[:name]}"])
     rescue Puppet::ExecutionFailure => e
       Puppet.debug("error removing token -> #{e.inspect}")
       return nil
@@ -29,7 +29,7 @@ Puppet::Type.type(:logentries_token).provide :token do
   def exists?
     Puppet.debug "exists"
     begin
-      le(['ls', "hosts/#{get_host_key}/#{resource[:name]}"])
+      le(['ls', "hostnames/#{get_host_key}/#{resource[:name]}"])
       return true
     rescue Puppet::ExecutionFailure => e
       Puppet.debug("error finding token -> #{e.inspect}")
