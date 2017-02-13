@@ -18,7 +18,9 @@
 # limitations under the License.
 #
 
-class logentries::dependencies {
+class logentries::dependencies (
+  $simplejson_package = 'python-simplejson',
+) {
 
   Exec {
     path => '/usr/bin:/usr/sbin:/bin:/sbin',
@@ -56,7 +58,7 @@ class logentries::dependencies {
         gpgkey   => 'http://rep.logentries.com/RPM-GPG-KEY-logentries',
       }
 
-      package { [ 'python-simplejson' ]:
+      package { $simplejson_package:
         ensure  => latest,
         require => Yumrepo['logentries']
       }
