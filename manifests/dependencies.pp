@@ -45,7 +45,7 @@ class logentries::dependencies (
       }
 
       yumrepo { 'logentries':
-        descr    => "logentries $::operatingsystemrelease $::architecture Repository ",
+        descr    => "logentries $::operatingsystemrelease $::architecture Repository",
         enabled  => 1,
         baseurl  => $::operatingsystem ? {
           /(?i)(fedora|redhat|centos|scientific)/ => 'http://rep.logentries.com/rh/$basearch',
